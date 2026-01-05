@@ -204,8 +204,23 @@ function formatDate(date) {
  * 12, 2023 => 10
  * 1, 2024 => 8
  */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  const lastDay = new Date(Date.UTC(year, month, 0));
+  const daysInMonth = lastDay.getUTCDate();
+
+  const firstDay = new Date(Date.UTC(year, month - 1, 1));
+  const firstDayOfWeek = firstDay.getUTCDay();
+
+  let weekendCount = 0;
+
+  for (let day = 0; day < daysInMonth; day += 1) {
+    const dayOfWeek = (firstDayOfWeek + day) % 7;
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      weekendCount += 1;
+    }
+  }
+
+  return weekendCount;
 }
 
 /**
@@ -221,8 +236,21 @@ function getCountWeekendsInMonth(/* month, year */) {
  * Date(2024, 0, 31) => 5
  * Date(2024, 1, 23) => 8
  */
-function getWeekNumberByDate(/* date */) {
-  throw new Error('Not implemented');
+
+function getWeekNumberByDate(date) {
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
+
+  const dayNr = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - dayNr + 3);
+
+  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  const firstDayNr = (firstThursday.getUTCDay() + 6) % 7;
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNr + 3);
+
+  const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
+  return 1 + Math.round((d - firstThursday) / MS_IN_WEEK);
 }
 
 /**
